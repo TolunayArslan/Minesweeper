@@ -1,6 +1,5 @@
 package model;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,13 @@ public class Minesweeper {
 
     final private int columns = 20;
     final private int rows = 20;
-    Map<Integer, Integer> mineIndexes = new HashMap<Integer, Integer>();
+    final int amountOfMines = 8;
+
+    //TODO: Key kann nur einmal vorkommen
+    //Map<Integer, Integer> mineIndexes = new HashMap<Integer, Integer>();
+
+    ArrayList<Integer>  columnValues = new ArrayList<>();
+    ArrayList<Integer>  rowValues = new ArrayList<>();
 
     ArrayList<Field> allFields = new ArrayList<>();
 
@@ -20,11 +25,12 @@ public class Minesweeper {
         //allFields.clear();
 
         // Secondly, get the position for the mines
-        int amountOfMines = 8;
         for(int index = 1; index <= amountOfMines; index++) {
             int column = (int)(Math.random() * columns);
             int row = (int)(Math.random() * rows);
-            mineIndexes.put(column,row);
+            columnValues.add(column);
+            rowValues.add(row);
+            //mineIndexes.put(column,row);
 
         }
 
@@ -34,8 +40,9 @@ public class Minesweeper {
 
     Boolean isThisAMine(int positionColumn, int positionRow) {
 
-        if(mineIndexes.get(positionColumn) != null) {
-            int y = mineIndexes.get(positionColumn);
+        if(columnValues.contains(positionColumn)) {
+            int index = columnValues.indexOf(positionColumn);
+            int y = rowValues.get(index);
             return positionRow == y;
         }
             return false;
