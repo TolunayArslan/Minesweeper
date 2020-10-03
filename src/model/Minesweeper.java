@@ -4,25 +4,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Klasse Minesweeper
+ * @author Tolunay Arslan
+ * Die Klasse Minesweeper beinhaltet die Game Logik und ist UI unabhängig.
+ */
 public class Minesweeper {
+
 
     final private int columns = 20;
     final private int rows = 20;
+
+    // The total amount of mines in the game
     final int amountOfMines = 8;
 
-    //TODO: Key kann nur einmal vorkommen
+
     //Map<Integer, Integer> mineIndexes = new HashMap<Integer, Integer>();
 
+    // The column numbers of the mines.
     ArrayList<Integer>  columnValues = new ArrayList<>();
+
+    // The row numbers of the mines.
     ArrayList<Integer>  rowValues = new ArrayList<>();
 
+    // Beinhaltet alle Felder des Spielfelds
     ArrayList<Field> allFields = new ArrayList<>();
 
 // x = column, y = row
     public Minesweeper() {
         // Firstly, initialize the game.
-      //  mineIndexes.clear();
-        //allFields.clear();
+          //  mineIndexes.clear();
+         //allFields.clear();
 
         // Secondly, get the position for the mines
         for(int index = 1; index <= amountOfMines; index++) {
@@ -34,11 +46,12 @@ public class Minesweeper {
 
         }
 
-        // Thirdly, prepare the playground (set mines, etc.).
+        // Thirdly, prepare the playing field (set mines, etc.).
         prepareGrid();
     }
 
-    Boolean isThisAMine(int positionColumn, int positionRow) {
+    // Checks whether the fiven field is a mine or not and returns accordingly the boolean value
+    private Boolean isThisAMine(int positionColumn, int positionRow) {
 
         if(columnValues.contains(positionColumn)) {
             int index = columnValues.indexOf(positionColumn);
@@ -48,6 +61,7 @@ public class Minesweeper {
             return false;
     }
 
+    // Prepares the playing field
     private void prepareGrid() {
         for(int column = 1; column <= columns; column++) {
             for(int row = 1; row <= rows; row++) {
@@ -62,18 +76,24 @@ public class Minesweeper {
         }
     }
 
-    Boolean chooseAField(int positionColumn, int positionRow) {
+    /**
+     * Chooses and checks whether the field is a mine and return true if it is a mine.
+     */
+    Boolean chooseAndCheckTheField(int positionColumn, int positionRow) {
         for (Field field : allFields) {
+            // First get the right field
             if (field.positionColumn == positionColumn
                     && field.positionRow == positionRow) {
                 field.isTapped = true;
-                // TODO: Implementing the logic after clicking on a field
+
+                return isThisAMine(positionColumn, positionRow);
+
             }
         }
-        return false;
+
     }
 
-    // marks and dis marks a field
+    // Marks or dismarks the given field
     void markField(int positionColumn, int positionRow) {
         for (Field field : allFields) {
             if (field.positionColumn == positionColumn
@@ -87,6 +107,4 @@ public class Minesweeper {
             }
         }
     }
-
-
 }
