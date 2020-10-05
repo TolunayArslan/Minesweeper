@@ -11,7 +11,7 @@ public class ViewController  {
     private Minesweeper minesweeper;
     // Array of all the fields
 
-
+act
     public ViewController(Minesweeper minesweeper) {
 
         this.minesweeper = minesweeper;
