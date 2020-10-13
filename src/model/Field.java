@@ -2,17 +2,20 @@ package model;
 
 public class Field {
 
-    Boolean isTapped = false;
-    Boolean mine;
-    Boolean isMarked = false;
-    int positionRow;
-    int positionColumn;
+    public Boolean isTapped = false;
+    public Boolean isAMine;
+    public Boolean isMarked = false;
 
+    public int positionRow;
+    public int positionColumn;
+    public int[] id;
 
-    public Field(Boolean mine, int positionColumn, int positionRow) {
-        this.mine = mine;
+    public Field(Boolean isAMine, int positionColumn, int positionRow, int[] id) {
+        this.isAMine = isAMine;
         this.positionRow = positionRow;
         this.positionColumn = positionColumn;
+
+        this.id = id;
     }
 
 }

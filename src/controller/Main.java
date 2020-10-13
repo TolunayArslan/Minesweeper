@@ -1,7 +1,5 @@
 package controller;
 
-import model.Minesweeper;
-
 
 /**
  * @author Tolunay Arslan
@@ -10,10 +8,10 @@ import model.Minesweeper;
  */
 public class Main {
 
+
     // Starts the program
     public static void main(String[] args) {
-        Minesweeper First = new Minesweeper();
-
+        Controller controller = new Controller();
     }
 
 
