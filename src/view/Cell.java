@@ -3,6 +3,10 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * @author Tolunay Arslan and Kai Ringeis
+ * This class represents the controller of this program. It oberserves the users actions and respons to it accordingly.
+ */
 public class Cell extends JButton{
 
     private static final int width = 50;

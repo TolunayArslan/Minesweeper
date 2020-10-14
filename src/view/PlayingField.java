@@ -1,7 +1,11 @@
 package view;
-
 import javax.swing.*;
 import java.awt.*;
+
+/**
+ * @author Tolunay Arslan and Kai Ringeis
+ * This class represents the controller of this program. It oberserves the users actions and respons to it accordingly.
+ */
 
 public class PlayingField extends JFrame {
 
@@ -41,6 +45,4 @@ public class PlayingField extends JFrame {
 
         setJMenuBar(menuBar);
     }
-
-
 }
