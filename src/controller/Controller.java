@@ -4,38 +4,84 @@ import model.Field;
 import model.Minesweeper;
 import view.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 /**
  * @author Tolunay Arslan
  * This class represents the controller of this program. It oberserves the users actions and respons to it accordingly.
  */
-public class Controller implements ActionListener, MenuListener {
+public class Controller implements ActionListener, MenuListener, MouseListener {
 
-    // Model. Logic of the game.
+    /**
+     * Reference to the model
+     */
     Minesweeper minesweeper;
 
-    // The playing field.
+    /**
+     * Reference to the view
+     */
     PlayingField playingField;
 
-    // Array containing all cells in the game
+    /**
+     * The {@link ArrayList} contains all {@link Cell}s
+     */
     ArrayList<Cell> allCells = new ArrayList<Cell>();
 
+
+    /**
+     * after pressing restart the app needs to initialize the values and references.
+     * */
+    public void initializeGame() {
+        //allCells.clear();
+        //playingField.container.removeAll();
+        minesweeper.mines.clear();
+        minesweeper.setThePositionsForTheMines();
+
+        for(int index = 0; index < allCells.size(); index++) {
+            minesweeper.allFields.get(index).destroy = false;
+            minesweeper.allFields.get(index).isTapped = false;
+            minesweeper.allFields.get(index).isMarked = false;
+            minesweeper.allFields.get(index).amountOfMinesSurrounded = 0;
+
+            allCells.get(index).setIcon(null);
+            allCells.get(index).setEnabled(true);
+            allCells.get(index).setText("");
+            allCells.get(index).isAMine = minesweeper.allFields.get(index).isAMine;
+            try {
+                Image unpressed = ImageIO.read(getClass().getResource("../images/title_unpressed.png"));
+                allCells.get(index).setIcon(new ImageIcon(unpressed));
+
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+        }
+        updateViewFromModel();
+        playingField.setVisible(true);
+    }
+
+    /**
+     * Es werden die Anzahl der Minen, Reihen und Spalten definiert
+     * Das Spielfeld wird dort erzeugt. Auf diesem finden die Interaktionen statt.
+     * Die Zellen des Feldes werden hinzugefügt
+     * Dem {@link javax.swing.JFrame} werden Eigenschaften zugewießen
+     * Das Icon wird dem JFrame hinzugefügt
+     * */
     public Controller() {
 
-        // First initialize the model
         minesweeper = new Minesweeper(20,20, 8);
-
-        // Second initialize the playing field
+        // First initialize the playing field
         playingField = new PlayingField(250,250);
 
-        // Thirdly initialize all cells for the game
         for(Field field : minesweeper.allFields) {
             // Create the cell
             Cell cell = new Cell(field.isAMine, field.id, field.positionColumn, field.positionRow);
@@ -45,102 +91,134 @@ public class Controller implements ActionListener, MenuListener {
 
             // Assign the cell to the listener
             cell.addActionListener(this);
-
+            cell.addMouseListener(this);
             // Add the cell to the JPanel
             playingField.container.add(cell);
         }
+        // Last update the view (playing field)
+        updateViewFromModel();
+        //Menu Bar
+        playingField.restartButton.addMenuListener(this);
 
         // To some UI adjustments to the playing field view
         playingField.pack();
-        playingField.setVisible(true);
+
         playingField.setResizable(false);
         playingField.setSize(600,600);
         ImageIcon gameIcon = new ImageIcon("../images/ic_main.png");
         playingField.setIconImage(gameIcon.getImage());
 
-        // Last update the view (playing field)
-        updateViewFromModel();
+        // Second initialize the model
+
+        playingField.setVisible(true);
+
     }
 
+    /**
+     * @param e erfasst die Reaktion des Spielers
+     * Wenn der Spieler ein flasches Feld aufdeckt kommt die Meldung in der Console, dass er das Match verloren hat
+     * */
     @Override
     public void actionPerformed(ActionEvent e) {
         // First get the right cell
         for(Cell cell : allCells) {
             if (cell == e.getSource()) {
-
-                if (!minesweeper.tapCellAndCheckIfItsAMine(cell.positionColumn, cell.positionRow)) {
-                    // Means it is not a mine
-                    updateViewFromModel();
-                } else {
-                    // The tapped cell is a mine
-                    updateViewFromModel();
-                }
+                minesweeper.tapCellAndCheckIfItsAMine(cell.positionColumn, cell.positionRow, true);
+                updateViewFromModel();
             }
         }
     }
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
-        JOptionPane.showMessageDialog(null, "<your message here...>", "Alert", JOptionPane.ERROR_MESSAGE);
-    }
 
+    /**
+     * Updates the view according to the values of the model.
+     */
     public void updateViewFromModel(){
 
         int indices = allCells.size();
         for (int index = 0; index < indices; index++) {
 
+            // Did the user press on a mile?
             if (minesweeper.allFields.get(index).destroy) {
-
-                System.out.print("Hi");
-                ImageIcon destroy = new ImageIcon("../images/Icon.png");
-                allCells.get(index).setIcon(destroy);
-                JOptionPane.showMessageDialog(null, "Lose. Please press restart to continue.", "Minesweeper", JOptionPane.ERROR_MESSAGE);
-
+                try {
+                    Image destroy = ImageIO.read(getClass().getResource("../images/Icon.png"));
+                    allCells.get(index).setIcon(new ImageIcon(destroy));
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
+                JOptionPane.showMessageDialog(null, "Please press restart to play again.", "Lose", JOptionPane.ERROR_MESSAGE);
             }
 
+            // Did the user press on a cell which is not a mine?
             if (minesweeper.allFields.get(index).isTapped) {
-                //ImageIcon pressedButton = new ImageIcon("//C:/Users/kai_r/eclipse-workspace/Minsweeper/src/Images/pressed_2.png");
-                //field.setPressedIcon(pressedButton);
-                allCells.get(index).setVisible(false);
-            } else {
+                allCells.get(index).setIcon(null);
+                if(minesweeper.allFields.get(index).amountOfMinesSurrounded != 0) {
+                    allCells.get(index).setText(String.valueOf(minesweeper.allFields.get(index).amountOfMinesSurrounded));
+                }
 
-                //ImageIcon normal = new ImageIcon("C:\\Users\\i516464\\Desktop\\TolunayMinesweeper\\src\\view\\icons\\title_unpressed.png");
-                //allCells.get(index).setIcon(normal);
+                allCells.get(index).setEnabled(false);
+
             }
 
+            // Did the user mark a field?
             if (minesweeper.allFields.get(index).isMarked) {
-                ImageIcon flag = new ImageIcon("../images/icon6_2.png");
-                allCells.get(index).setIcon(flag);
+                try {
+                    Image flag = ImageIO.read(getClass().getResource("../images/Icon6_2.png"));
+                    allCells.get(index).setIcon(new ImageIcon(flag));
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
             } else {
-                ImageIcon normal = new ImageIcon("../images/unpressed.png");
-                allCells.get(index).setIcon(normal);
-            }
+                try {
+                        Image unpressed = ImageIO.read(getClass().getResource("../images/title_unpressed.png"));
+                        allCells.get(index).setIcon(new ImageIcon(unpressed));
+
+                    } catch (Exception ex) {
+                        System.out.println(ex);
+                    }
+                }
+
         }
 
     }
 
-    public void viewCell(){
-
-    }
-
-
+    /**
+     * Receives the interaction of the user with the menu bar and fires of an action accordingly.
+     * @param e hat the particular view which was clicked by the user.
+     * */
     @Override
     public void menuSelected(MenuEvent e) {
 
         if(playingField.restartButton == e.getSource()) {
-            System.out.print("HELLO WORLD");
+            Main.controller.initializeGame();
         }
-        if(e.getSource().equals(playingField.restartButton)) { // restart
-            //Main.controller = new Controller();
 
-        }
-        if(e.getSource().equals(playingField.exitButton)) { // exit
-            //System.exit(0);
-        }
-        if(e.getSource().equals(playingField.easyButton)) { // easy
+    }
 
-        }
-        if(e.getSource().equals(playingField.hardButton)) { // hard
+    /**
+     * Receives the mouseclick of the user and does only change the state of isMarked when user right click.
+     * */
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        // First get the right cell
+        for(Cell cell : allCells) {
+            if (cell == e.getSource()) {
+                if (SwingUtilities.isRightMouseButton(e)) {
 
+                    int index = minesweeper.getIndexOfField(cell.positionColumn, cell.positionRow);
+
+
+                    if(minesweeper.allFields.get(index).isMarked) {
+                        System.out.println("Seasdsada");
+                        minesweeper.allFields.get(index).isMarked = false;
+                    } else {
+                        System.out.println("Seasdsada");
+                        minesweeper.allFields.get(index).isMarked = true;
+                    }
+                    updateViewFromModel();
+                }
+
+            }
         }
     }
 
@@ -151,6 +229,26 @@ public class Controller implements ActionListener, MenuListener {
 
     @Override
     public void menuCanceled(MenuEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
 
     }
 }
