@@ -132,12 +132,19 @@ public class Minesweeper {
         return 0;
     }
 
+    /**
+     * Gets the index of the given cell in the allFields array.
+     * @param positionColumn column position of the cell in the playing field.
+     * @param positionRow row position of the cell in the playing field.
+     */
     private void checkSurroundingCells(int positionColumn, int positionRow) {
         int surroundedPositionColumn = 0;
         int surroundedPositionRow = 0;
+
         int amountOfMinesSurrounded = 0;
         int index = 0;
 
+        // here are the indices in the allFields array for the cells in this iteration
         ArrayList<Integer> surroundedFieldsIndices = new ArrayList<>();
 
         // TOP
@@ -148,7 +155,9 @@ public class Minesweeper {
             index = getIndexOfField(surroundedPositionColumn, surroundedPositionRow);
             System.out.println(surroundedPositionColumn + " " + surroundedPositionColumn + "\n");
             surroundedFieldsIndices.add(index);
-            if (isThisAMine(surroundedPositionColumn, surroundedPositionRow)) amountOfMinesSurrounded += 1;
+            if (isThisAMine(surroundedPositionColumn, surroundedPositionRow)) {
+                amountOfMinesSurrounded += 1;
+            }
         }
 
         surroundedPositionColumn = positionColumn;
@@ -197,7 +206,9 @@ public class Minesweeper {
             // since we don't have any position lower than 1
             index = getIndexOfField(surroundedPositionColumn, surroundedPositionRow);
             surroundedFieldsIndices.add(index);
-            if (isThisAMine(surroundedPositionColumn, surroundedPositionRow)) amountOfMinesSurrounded += 1;
+            if (isThisAMine(surroundedPositionColumn, surroundedPositionRow)) {
+                amountOfMinesSurrounded += 1;
+            }
         }
 
         surroundedPositionColumn = positionColumn;
@@ -206,7 +217,9 @@ public class Minesweeper {
             // since we don't have any position lower than 1
             index = getIndexOfField(surroundedPositionColumn, surroundedPositionRow);
             surroundedFieldsIndices.add(index);
-            if (isThisAMine(surroundedPositionColumn, surroundedPositionRow)) amountOfMinesSurrounded += 1;
+            if (isThisAMine(surroundedPositionColumn, surroundedPositionRow)) {
+                amountOfMinesSurrounded += 1;
+            }
         }
 
         surroundedPositionColumn = positionColumn +1;
@@ -215,24 +228,30 @@ public class Minesweeper {
             // since we don't have any position lower than 1
             index = getIndexOfField(surroundedPositionColumn, surroundedPositionRow);
             surroundedFieldsIndices.add(index);
-            if (isThisAMine(surroundedPositionColumn, surroundedPositionRow)) amountOfMinesSurrounded += 1;
+            if (isThisAMine(surroundedPositionColumn, surroundedPositionRow)) {
+                amountOfMinesSurrounded += 1;
+            }
         }
+        System.out.println(amountOfMinesSurrounded);
 
         if(amountOfMinesSurrounded > 1) {
-            // Just show the number. Dont open anyone since there are more than one mine
+            // There are more than one mines in the surrounded area.
+            // Just show the number of the mines
             if (positionColumn >= 1 && positionRow >= 1 && positionColumn <= 20 && positionRow <= 20) {
                 int x = getIndexOfField(positionColumn, positionRow);
                 allFields.get(x).amountOfMinesSurrounded = amountOfMinesSurrounded;
             }
-
             return;
+
         } else if(amountOfMinesSurrounded == 0) {
             // there are no mines
             // surroundedFieldsIndices hier stecken die indexe
             for(int i = 0; i < surroundedFieldsIndices.size(); i++) {
                     allFields.get(surroundedFieldsIndices.get(i)).isTapped = true;
-                    tapCellAndCheckIfItsAMine(allFields.get(surroundedFieldsIndices.get(i)).positionColumn,
-                            allFields.get(surroundedFieldsIndices.get(i)).positionRow, false);
+                    if(tapCellAndCheckIfItsAMine(allFields.get(surroundedFieldsIndices.get(i)).positionColumn,
+                            allFields.get(surroundedFieldsIndices.get(i)).positionRow, false)) {
+                        return;
+                    }
             }
             return;
         } else {
@@ -269,11 +288,12 @@ public class Minesweeper {
 
             return false;
         }
-        System.out.println("wieder position!");
         return false;
     }
 
-    // Marks or dismarks the given field
+    /**
+     * marks or dismarks the given field.
+     */
     void markField(int positionColumn, int positionRow) {
         for (Field field : allFields) {
             if (field.positionColumn == positionColumn

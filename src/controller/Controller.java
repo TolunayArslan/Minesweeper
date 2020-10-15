@@ -138,6 +138,7 @@ public class Controller implements ActionListener, MenuListener, MouseListener {
         int indices = allCells.size();
         for (int index = 0; index < indices; index++) {
 
+            //****************************************************
             // Did the user press on a mile?
             if (minesweeper.allFields.get(index).destroy) {
                 try {
@@ -146,9 +147,13 @@ public class Controller implements ActionListener, MenuListener, MouseListener {
                 } catch (Exception ex) {
                     System.out.println(ex);
                 }
-                JOptionPane.showMessageDialog(null, "Please press restart to play again.", "Lose", JOptionPane.ERROR_MESSAGE);
+
+                // Show sthe Pup up
+                JOptionPane.showMessageDialog(null, "Please press restart to play again.",
+                        "Lose", JOptionPane.ERROR_MESSAGE);
             }
 
+            //****************************************************
             // Did the user press on a cell which is not a mine?
             if (minesweeper.allFields.get(index).isTapped) {
                 allCells.get(index).setIcon(null);
@@ -160,27 +165,27 @@ public class Controller implements ActionListener, MenuListener, MouseListener {
 
             }
 
+            //****************************************************
             // Did the user mark a field?
             if (minesweeper.allFields.get(index).isMarked) {
                 try {
-                    Image flag = ImageIO.read(getClass().getResource("../images/Icon6_2.png"));
+                    Image flag = ImageIO.read(getClass().getResource("../images/flag.png"));
                     allCells.get(index).setIcon(new ImageIcon(flag));
                 } catch (Exception ex) {
                     System.out.println(ex);
                 }
             } else {
+                // User dismarked a cell
                 try {
-                        Image unpressed = ImageIO.read(getClass().getResource("../images/title_unpressed.png"));
+                        Image unpressed = ImageIO.read(getClass().getResource("../images/unpressedCell.png"));
                         allCells.get(index).setIcon(new ImageIcon(unpressed));
 
                     } catch (Exception ex) {
                         System.out.println(ex);
                     }
                 }
-
+            }
         }
-
-    }
 
     /**
      * Receives the interaction of the user with the menu bar and fires of an action accordingly.

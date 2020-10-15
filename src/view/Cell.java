@@ -41,7 +41,7 @@ public class Cell extends JButton{
         this.setSize(width, height);
         this.setBorder(BorderFactory.createLineBorder(Color.WHITE));
         try {
-            Image unpressed = ImageIO.read(getClass().getResource("../images/title_unpressed.png"));
+            Image unpressed = ImageIO.read(getClass().getResource("../images/unpressedCell.png"));
             this.setIcon(new ImageIcon(unpressed));
 
         } catch (Exception ex) {
